@@ -1,20 +1,37 @@
-$(document).ready(function(){
-    //selecionando o elemento que iremos monitorar o click
+     $(document).ready(function() {
 
-$('.btn').click(function(e){
-    e.preventDefault()
-    
-    //Armazenando os dados digitados em variáveis
-    var nome = $('#NOME').val()
-    var idade = $('#IDADE').val()
+     $.ajax({
+              type: 'GET',
+              dataType: 'json',
+              data: { orderBy: "nome" }, 
+              url: `https://servicodados.ibge.gov.br/api/v1/localidades/estados`,
+              success: function(response) {
+                  $.each(response, function(indexInArray, valueOfElement) {
+                      var option = "<option>" + valueOfElement.sigla + "</option>" 
+                      $("#uf").append(option)
+          })
+      }
+  })
+});
 
-    var mensagem = 'Seja bem vindo, '+nome!+', sua idade é '+idade
 
-    $('#mensagem').append(mensagem)
+      $('#uf').change(function(e) {
+            e.preventDefault();
+            $("#cidade").empty();
+            var uf = $('#uf').val();
 
-    // Limpar os campos do formulário
-    $('#NOME').focusin(function(){
-         $('#mensagem').empty()
-    })
+
+
+      $.ajax({
+            type: 'GET',
+            url: `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`,
+            data: { orderBy: "nome" },
+            dataType: "json",
+            success: function(response) {
+                $.each(response, function(indexInArray, valueOfElement) {
+                    var option = "<option>" + valueOfElement.nome + "</option>"
+                    $("#cidade").append(option)
+          })
+      }
   })
 })
